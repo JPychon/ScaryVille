@@ -1,0 +1,38 @@
+
+#wall {
+	-fx-background-color: #2f2828;
+}
+
+#border-wall-top{
+	-fx-background-color: #2f2828;
+}
+
+#border-wall-bottom{
+	-fx-background-color: #2f2828;
+}
+
+#border-wall-left{
+	-fx-background-color: #2f2828;
+}
+
+#border-wall-right{
+	-fx-background-color: #2f2828;
+}
+
+#border-wall-corner{
+	-fx-background-color: #2f2828;
+}
+
+#player-cell {
+	-fx-background-color: #b4b4b8;
+}
+
+#lunatic-cell {
+	-fx-background-color: black;
+}
+
+#path { }
+
+#start-cell { }
+
+#end-cell { }

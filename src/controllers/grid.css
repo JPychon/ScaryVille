@@ -1,0 +1,7 @@
+
+.gridpane {
+	-fx-background-color: black;
+	-fx-border-color: DIMGREY;
+	-fx-border-width: 2 2 2 2;
+	-fx-border-radius: 5;
+}

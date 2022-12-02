@@ -1,0 +1,34 @@
+.hbox-toolbar {
+	-fx-background-color: #141414;
+	-fx-min-height: 30;
+	-fx-background-radius: 0;
+}
+
+#hbox-reset-label {
+	-fx-font-family: serif; 
+	-fx-font-weight: bold; 
+	-fx-font-size: 24;
+	-fx-text-fill: linear-gradient(from 0px 0px to 0px 50px, firebrick, crimson 50%, firebrick 99%, firebrick);
+	-fx-border-color: radial-gradient(focus-angle 45deg, focus-distance 20%, center 25% 25%, radius 50%, reflect, gray, darkgray 75%, dimgray);
+}
+
+#hbox-title-label {
+	-fx-font-family: Papyrus; 
+	-fx-font-weight: bold; 
+	-fx-font-size: 32;
+	-fx-text-fill: radial-gradient(focus-angle 111.8deg, focus-distance -39.0805% , center 50.0% 50.9479%, radius 21.2644%, reflect, #bc1313d9 0.0%, #bc1313d9 0.6711%, #eed7d7d9 53.7199%, #972d2dd9 100.0%);
+	
+}
+
+#hbox-new-game-button {
+	-fx-font-family: Papyrus;
+	-fx-font-weight: bold;
+	-fx-font-size: 18;
+	-fx-background-color: #141414;
+	-fx-border-color: DIMGREY;
+	-fx-border-width: 1 1 1 1;
+	-fx-spacing: 0 0 0 0;
+	-fx-text-fill: white;
+	-fx-border-radius: 10;
+}
+
