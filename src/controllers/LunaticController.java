@@ -29,6 +29,8 @@ public class LunaticController {
 	
 	public LunaticController() { }
 	
+	public List<Lunatic> getLunatics() { return lunatics; }
+	
 	public void createLunatics() { // Creates the lunatics in random-valid locations on the map
 
 		int spawned_lunatics = MAX_LUNATICS;
@@ -40,7 +42,7 @@ public class LunaticController {
 		// It's meant to loop through the 2D array, pick a value, check the coordinate
 		// type & spawn the lunatic if it's valid.
 		// To avoid cluster, I tried iterating by +10
-		// the inner loops iteration per successfull new instance
+		// the inner loops iteration per successful new instance
 
 		for (int row = 5; row < boardState.length - 1; row += (lunaticSpawned ? 10 : 1)) { 
 			for (int col = 15; col < boardState[row].length - 1; col += (lunaticSpawned ? 10 : 1)) { 
@@ -217,39 +219,45 @@ public class LunaticController {
 						default:
 							break;
 						}
+						
+					} else if(lunatics.get(lunaticsCount).getLunaticState() == lunaticState.chasing) { // CHASING LOGIC
+						
+					
+						
+						
+						
 					}
 
-				}
+				} 
 			}
 		));
 			
-		/*updateLunaticsLOS();	
-		Coordinate playerLocation = GameController.PLAYER_CONTROLLER.getPlayerLocation();
-		for(Lunatic l : roamingLunatics) {
-			if(l.getHorizontalLineOfSight_left().contains(playerLocation) || l.getHorizontalLineOfSight_right().contains(playerLocation) 
-					|| l.getVerticalLineOfSight_down().contains(playerLocation) || l.getVerticalLineOfSight_up().contains(playerLocation)) {
-					
-				
-			}
-		}*/
-			
+		updateLunaticsLOS();
+		lunaticStateCheck();	
 		roamTimer.setCycleCount(Animation.INDEFINITE);
 		roamTimer.playFromStart();
 	}
-	
-	public void setLunaticToChase(Coordinate location, Lunatic lunatic_instance) {
-		int lunaticCurrentRow = lunatic_instance.getCurrentLocation().getRow();
-		int lunaticCurrentColumn = lunatic_instance.getCurrentLocation().getColumn();
+			
+	public void lunaticStateCheck() {
 		
-		int playerRow = location.getRow();
-		int playerCol = location.getColumn();
+		Coordinate currentPlayerLocation = GameController.PLAYER_CONTROLLER.getPlayerLocation();
 		
-		int vertical_distance = lunaticCurrentRow - playerRow;
-		int horizontal_distance = lunaticCurrentColumn - playerCol;
-		
-		
-		
+		for(Lunatic l : lunatics) {
+			
+			if(l.getVerticalLineOfSight_down().contains(currentPlayerLocation) || l.getVerticalLineOfSight_down().contains(currentPlayerLocation)) {
+				l.setLunaticState(lunaticState.chasing);
+			}
+			
+			if(l.getHorizontalLineOfSight_left().contains(currentPlayerLocation) || l.getHorizontalLineOfSight_right().contains(currentPlayerLocation)) {
+				l.setLunaticState(lunaticState.chasing);
+				
+			} else {
+				l.setLunaticState(lunaticState.idle_roam);
+			}
+		}
 	}
+		
+	
 
 	public void updateLunaticsLOS() {
 		
@@ -260,6 +268,7 @@ public class LunaticController {
 					List<Coordinate> down_LOS = new ArrayList<Coordinate>();
 					List<Coordinate> left_LOS = new ArrayList<Coordinate>();
 					List<Coordinate> right_LOS = new ArrayList<Coordinate>();
+					
 					
 					Tulpe4<List<Coordinate>, List<Coordinate>, List<Coordinate>, List<Coordinate>> lines_of_sight = new Tulpe4
 					<List<Coordinate>, List<Coordinate>, List<Coordinate>, List<Coordinate>> (up_LOS, down_LOS, left_LOS, right_LOS);
