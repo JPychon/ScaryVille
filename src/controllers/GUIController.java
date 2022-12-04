@@ -1,8 +1,5 @@
 package controllers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import models.Cell;
@@ -10,7 +7,6 @@ import models.Cell.cellType;
 import models.Coordinate;
 import models.Coordinate.coordinateType;
 import models.MapPane;
-import models.Tulpe4;
 
 public class GUIController  {
 	
@@ -41,52 +37,6 @@ public class GUIController  {
 		
 		primary_stage.setScene(GUI_INSTANCE.getScene());
 		primary_stage.show();
-	}
-	
-	public Tulpe4<List<Coordinate>, List<Coordinate>, List<Coordinate>, List<Coordinate>> getClearCellsFromCoordinate(int row, int column) 
-	{
-		Coordinate[][] gridState = GameController.BOARD_CONTROLLER.getBoard().getMapGrid();
-		int maxGridRows = GUI_INSTANCE.getMaxRows();
-		int maxGridColumns = GUI_INSTANCE.getMaxColumns();
-		
-		List<Coordinate> up_LOS = new ArrayList<Coordinate>();
-		List<Coordinate> down_LOS = new ArrayList<Coordinate>();
-		List<Coordinate> left_LOS = new ArrayList<Coordinate>();
-		List<Coordinate> right_LOS = new ArrayList<Coordinate>();
-		
-		for(int up = row; up >= 2; up--) {
-			if(gridState[up][column].getCoordinateType() != coordinateType.WALL) {
-				up_LOS.add(gridState[up][column]);
-			} else {
-				break;
-			}
-		}
-		
-		for(int down = row; down < maxGridRows-1; down++) {
-			if(gridState[down][column].getCoordinateType() != coordinateType.WALL) {
-				down_LOS.add(gridState[down][column]);
-			} else {
-				break;
-			}
-		}
-		
-		for(int left = column; left >= 1; left--) {
-			if(gridState[row][left].getCoordinateType() != coordinateType.WALL) {
-				left_LOS.add(gridState[row][left]);
-			} else {
-				break;
-			}
-		}
-		
-		for(int right = column; right < maxGridColumns-1; right++) {
-			if(gridState[row][right].getCoordinateType() != coordinateType.WALL) {
-				right_LOS.add(gridState[row][right]);
-			} else {
-				break;
-			}
-		}
-		
-		return new Tulpe4<>(up_LOS, down_LOS, left_LOS, right_LOS); 
 	}
 	
 	public void populateGrid(boolean isInitial) { 
@@ -165,30 +115,19 @@ public class GUIController  {
 		}
 	
 	
-	public void updateGUIState(int oldRow, int oldCol, int newRow, int newCol, coordinateType newType) {
+	public void updateGUIState(int oldRow, int oldCol, int newRow, int newCol, cellType newType) {
 		
-		Cell oldPlayerCell = new Cell(cellType.PATH); // Cell holding the player's last position
+		Cell oldCell = new Cell(cellType.PATH); // Cell holding the player's last position
 		
 		GUI_INSTANCE.getRootNode().getChildren().remove(GUI_INSTANCE.getCellFromArray(oldRow-1, oldCol).getNode()); // Remove the old cell from the gridPane
-		GUI_INSTANCE.insertCellToArray(oldPlayerCell, oldRow-1, oldCol); // Update the 2D Cell Array
-		GUI_INSTANCE.getRootNode().add(oldPlayerCell.getNode(), oldCol, oldRow);  // Add the new cell (BLANK)
+		GUI_INSTANCE.insertCellToArray(oldCell, oldRow-1, oldCol); // Update the 2D Cell Array
+		GUI_INSTANCE.getRootNode().add(oldCell.getNode(), oldCol, oldRow);  // Add the new cell (BLANK)
 		
-		if(newType == coordinateType.PLAYER) {
+		Cell newCell = new Cell(newType); // Cell holding the player's current position
 			
-			Cell newPlayerCell = new Cell(cellType.PLAYER); // Cell holding the player's current position
-			
-			GUI_INSTANCE.getRootNode().getChildren().remove(GUI_INSTANCE.getCellFromArray(newRow-1, newCol).getNode()); // Remove the old cell from the gridPane
-			GUI_INSTANCE.insertCellToArray(newPlayerCell, newRow-1, newCol);
-			GUI_INSTANCE.getRootNode().add(newPlayerCell.getNode(), newCol, newRow); // Add the new cell (Player)
-			
-		} else if(newType == coordinateType.LUNATIC) {
-			
-			Cell newLunaticCell = new Cell(cellType.LUNATIC);
-			
-			GUI_INSTANCE.getRootNode().getChildren().remove(GUI_INSTANCE.getCellFromArray(newRow-1, newCol).getNode()); // Remove the old cell from the gridpane
-			GUI_INSTANCE.insertCellToArray(newLunaticCell, newRow-1, newCol);
-			GUI_INSTANCE.getRootNode().add(newLunaticCell.getNode(), newCol, newRow); // Add the new cell (Lunatic)
-		}
+		GUI_INSTANCE.getRootNode().getChildren().remove(GUI_INSTANCE.getCellFromArray(newRow-1, newCol).getNode()); // Remove the old cell from the gridPane
+		GUI_INSTANCE.insertCellToArray(newCell, newRow-1, newCol);
+		GUI_INSTANCE.getRootNode().add(newCell.getNode(), newCol, newRow); // Add the new cell (Player)
 	}
 }
 

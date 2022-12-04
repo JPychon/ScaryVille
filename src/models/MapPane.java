@@ -52,6 +52,7 @@ public class MapPane {
 	public void insertCellToArray(Cell cell, int rowNum, int colNum) { gridCells[rowNum][colNum] = cell; }
 	public Cell getCellFromArray(int rowNum, int colNum) { return gridCells[rowNum][colNum]; }
 	public cellType getGridCellType(int row, int col) { return gridCells[row][col].getCellType(); }
+	public Cell[][] getGrid() { return gridCells; }
 	
 	public int getMaxRows() { return maxGridRows; }
 	public int getMaxColumns() { return maxGridColumns; }

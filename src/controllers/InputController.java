@@ -19,10 +19,8 @@ public class InputController implements EventHandler<KeyEvent> {
 			case LEFT: GameController.PLAYER_CONTROLLER.updatePlayerLocation(playerMovement.LEFT); break;
 			case RIGHT: GameController.PLAYER_CONTROLLER.updatePlayerLocation(playerMovement.RIGHT); break;
 			
-			case F10:  // Resets the game
-					GameController.GUI_CONTROLLER.resetRootNode(); 
-					Main.GAME_INSTANCE.startNewGame();
-					break;
+			case F10: GameController.GUI_CONTROLLER.resetRootNode(); Main.GAME_INSTANCE.startNewGame(); break;
+			case HOME: Main.GAME_INSTANCE.pauseGame(); break; // Pauses the game
 					
 			default: break;
 			

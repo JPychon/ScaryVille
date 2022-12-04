@@ -11,7 +11,7 @@ public class Main extends Application {
 	
 	public int rowNum = 30; // Total number of rows to be used.
 	public int colNum = 50; // Total number of columns to be used.
-	public double wallCoeff = 0.18; // wall percentage coefficient
+	public double wallCoeff = 0.20; // wall percentage coefficient
 	
 	@Override
 	public void start(Stage mainStage) throws Exception {

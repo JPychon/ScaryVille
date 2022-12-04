@@ -28,7 +28,8 @@ public class Cell { // Tracks the grid-type for the GUI
 	private String image_topCorners = "left-right-wall.png";  // Image for top-corners
 	private String image_Wall = "wall.png"; // regular wall
 	private String image_player = "player-model.png"; // Player model
-	private String image_lunatic = "lunatic-model.png"; // Lunatic model
+	private String image_idle_lunatic = "idle-lunatic.png"; // Lunatic model
+	private String image_chasing_lunatic = "chasing-lunatic.png"; // Chasing lunatic model
 	
 	//------------------------------------------------------------------------------------//
 		
@@ -45,6 +46,7 @@ public class Cell { // Tracks the grid-type for the GUI
 		END,
 		PLAYER,
 		LUNATIC,
+		LUNATIC_CHASING,
 	}
 	
 	@SuppressWarnings("static-access") // Enums are inherently static; thus, supressing the warning.
@@ -155,11 +157,21 @@ public class Cell { // Tracks the grid-type for the GUI
 			case LUNATIC: // Lunatic cell
 				cellType = cellType.LUNATIC;
 				CELL_LABEL.setId("lunatic-cell");
-				labelImage = new Image(image_lunatic);
+				labelImage = new Image(image_idle_lunatic);
 				labelImageView = new ImageView(labelImage);
 				labelImageView.setPreserveRatio(true);
 				CELL_LABEL.setGraphic(labelImageView);
 				break;
+				
+			case LUNATIC_CHASING:
+				cellType = cellType.LUNATIC_CHASING;
+				CELL_LABEL.setId("lunatic-cell");
+				labelImage = new Image(image_chasing_lunatic);
+				labelImageView = new ImageView(labelImage);
+				labelImageView.setPreserveRatio(true);
+				CELL_LABEL.setGraphic(labelImageView);
+				break;
+				
 		}
 				
 		CELL_LABEL.setMinHeight(CELL_SIZE); // 32 pixels

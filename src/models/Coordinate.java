@@ -14,7 +14,8 @@ public class Coordinate { // Tracks the grid-location for the board (logic)
 		START, // Start point 						[CHAR: 'S']
 		EXIT, // End point 							[CHAR: 'E']
 		PLAYER, // Player point						[CHAR: 'P']
-		LUNATIC // Lunatic point					[CHAR: 'L']
+		LUNATIC, // Lunatic point					[CHAR: 'L']
+		LUNATIC_CHASING, // Lunatic Chasing			[CHAR: 'C']
 	}
 	
 	public int getRow() { return this.row; } // returns Y value of the coordinate.
@@ -58,6 +59,9 @@ public class Coordinate { // Tracks the grid-location for the board (logic)
 		case LUNATIC:
 			coordinateValue = 'L'; // Luantic point
 			break;
+		case LUNATIC_CHASING:
+			coordinateValue = 'C'; // Lunatic chasing point
+			break;
 		}
 	}
 	
@@ -87,6 +91,18 @@ public class Coordinate { // Tracks the grid-location for the board (logic)
 		case LUNATIC:
 			coordinateValue = 'L'; // Luantic point
 			break;
+		case LUNATIC_CHASING:
+			coordinateValue = 'C'; // Lunatic chasing point
+			break;
 		}
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		Coordinate coordinate = (Coordinate) o;
+		return row == coordinate.row && column == coordinate.column;
+	}
+	
+	@Override
+	public String toString() { return "(" + this.row + "," + this.column + ")"; }
 }

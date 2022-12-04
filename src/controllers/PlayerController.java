@@ -42,94 +42,102 @@ public class PlayerController {
 			int currentCol = currentPlayerLocation.getColumn(); // Current Y location
 			int newRow, newCol;
 			
-			switch(next_move) {
-			case LEFT: // Move to left-cell
-		
-					newRow = currentRow;
-					newCol = currentCol-1;
-					
-					if(GameController.GUI_CONTROLLER.getGUI().getGridCellType(newRow-1, newCol) == cellType.END) { // If player reaches the end
-						
-						removePlayer(); // Remove the player instance
-						GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridpane
-						Main.GAME_INSTANCE.startNewGame(); // Start a new game
-						
-						
-					} else if(GameController.GUI_CONTROLLER.getGUI().getGridCellType(newRow-1, newCol) == cellType.PATH) { 
-						
-						updatePlayerLocation(newRow, newCol);
-						GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
-						GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
-						break;
-					}
-					
-					break;	
-					
-			case RIGHT: // Move to right-cell
+			if(!Main.GAME_INSTANCE.isGamePaused()) {
 				
-					newRow = currentRow;
-					newCol = currentCol+1;
+				switch(next_move) {
+				case LEFT: // Move to left-cell
+			
+						newRow = currentRow;
+						newCol = currentCol-1;
+			
+						if(getCellType(newRow, newCol, cellType.END)) {
+							removePlayer(); // Remove the player instance
+							GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridpane
+							Main.GAME_INSTANCE.startNewGame(); // Start a new game
+							
+						} else if(getCellType(newRow, newCol, cellType.PATH)) {
+							updatePlayerLocation(newRow, newCol);
+							GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
+							GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.PLAYER);
+							break;
+							
+						} else if((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) {
+							Main.GAME_INSTANCE.gameLost();
+							
+						}
+						break;	
+						
+				case RIGHT: // Move to right-cell
 					
-					if(GameController.GUI_CONTROLLER.getGUI().getGridCellType(newRow-1, newCol) == cellType.END) {
+						newRow = currentRow;
+						newCol = currentCol+1;
 						
-						removePlayer();
-						GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridPane when the button is clicked.
-						Main.GAME_INSTANCE.startNewGame();
+						if(getCellType(newRow, newCol, cellType.END)) {
+							removePlayer();
+							GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridPane when the button is clicked.
+							Main.GAME_INSTANCE.startNewGame();
+							
+						} else if(getCellType(newRow, newCol, cellType.PATH)) {
+							updatePlayerLocation(newRow, newCol);
+							GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
+							GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.PLAYER);
+							break;
 						
-						
-					} else if(GameController.GUI_CONTROLLER.getGUI().getGridCellType(newRow-1, newCol) == cellType.PATH) {
-						
-						updatePlayerLocation(newRow, newCol);
-						GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
-						GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
+						} else if((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) {
+							Main.GAME_INSTANCE.gameLost();
+							
+						}
 						break;
-					}
-					
-					break;
-					
-			case UP: // Move to up-cell
-				
-					newRow = currentRow-1;
-					newCol = currentCol;
-					
-					if(GameController.GUI_CONTROLLER.getGUI().getGridCellType(newRow-1, newCol) == cellType.END) {
 						
-						removePlayer();
-						GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridPane when the button is clicked.
-						Main.GAME_INSTANCE.startNewGame();
+				case UP: // Move to up-cell
+					
+						newRow = currentRow-1;
+						newCol = currentCol;
 						
-					} else if(GameController.GUI_CONTROLLER.getGUI().getGridCellType(newRow-1, newCol) == cellType.PATH) {
+						if(getCellType(newRow, newCol, cellType.END)) {
+							removePlayer();
+							GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridPane when the button is clicked.
+							Main.GAME_INSTANCE.startNewGame();
+							
+						} else if(getCellType(newRow, newCol, cellType.PATH)) {
+							updatePlayerLocation(newRow, newCol);
+							GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
+							GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.PLAYER);
+							break;
 						
-						updatePlayerLocation(newRow, newCol);
-						GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
-						GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
+						} else if((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) {
+							Main.GAME_INSTANCE.gameLost();
+							
+						}
 						break;
-					}
+						
+				case DOWN: // Move to down-cell
 					
-					break;
-					
-			case DOWN: // Move to down-cell
-				
-					newRow = currentRow+1;
-					newCol = currentCol;
-					
-					if(GameController.GUI_CONTROLLER.getGUI().getGridCellType(newRow-1, newCol) == cellType.END) {
+						newRow = currentRow+1;
+						newCol = currentCol;
+	
+						if(getCellType(newRow, newCol, cellType.END)) {
+							removePlayer();
+							GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridPane when the button is clicked.
+							Main.GAME_INSTANCE.startNewGame();
+							
+						} else if(getCellType(newRow, newCol, cellType.PATH)) {
+							updatePlayerLocation(newRow, newCol);
+							GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
+							GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.PLAYER);
+							break;
 						
-						removePlayer();
-						GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridPane when the button is clicked.
-						Main.GAME_INSTANCE.startNewGame();
-						
-						
-					} else if(GameController.GUI_CONTROLLER.getGUI().getGridCellType(newRow-1, newCol) == cellType.PATH) {
-						
-						updatePlayerLocation(newRow, newCol);
-						GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
-						GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
+						} else if((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) {
+							Main.GAME_INSTANCE.gameLost();
+							
+						}
 						break;
-					}
-					
-					break;
+				}
 			}
+		}
+		
+		public boolean getCellType(int newRow, int newCol, cellType type) {
+			return GameController.GUI_CONTROLLER.getGUI().getGridCellType(newRow-1, newCol) == type;
 		}
 		
 		public void disablePlayerControls() { playerControlStatus = false; } // Disables player controls [arrows]
@@ -145,7 +153,7 @@ public class PlayerController {
 			playerInstance.setCurrentLocation(new Coordinate(PLAYER_START_ROW, PLAYER_START_COLUMN, coordinateType.PLAYER));
 
 			GameController.BOARD_CONTROLLER.updateBoardState(PLAYER_START_ROW, PLAYER_START_COLUMN, PLAYER_START_ROW, PLAYER_START_COLUMN, coordinateType.PLAYER);
-			GameController.GUI_CONTROLLER.updateGUIState(PLAYER_START_ROW, PLAYER_START_COLUMN, PLAYER_START_ROW, PLAYER_START_COLUMN, coordinateType.PLAYER);
+			GameController.GUI_CONTROLLER.updateGUIState(PLAYER_START_ROW, PLAYER_START_COLUMN, PLAYER_START_ROW, PLAYER_START_COLUMN, cellType.PLAYER);
 		}
 	
 		public void removePlayer() { // Removes the instance of the player
@@ -157,9 +165,9 @@ public class PlayerController {
 				int currentCol = currentPlayerLocation.getColumn(); // Current X location
 				
 				playerInstance.setCurrentLocation(new Coordinate(0,0));
-				updatePlayerLocation(0, 0);  // Resets location to 0-0 (off-grid)
-				GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, 0, 0, coordinateType.BLANK); // Resets the past-cell to blank/path
-				GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, 0, 0, coordinateType.BLANK); // Resets the next-cell to blank/path
+				updatePlayerLocation(1, 0);  // Resets location to 0-0 (off-grid)
+				GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, 1, 0, coordinateType.BLANK); // Resets the past-cell to blank/path
+				GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, 1, 0, cellType.PATH); // Resets the next-cell to blank/path
 				playerControlStatus = false; // Disables the player control/input
 			}
 		}
