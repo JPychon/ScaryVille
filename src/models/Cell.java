@@ -20,13 +20,13 @@ public class Cell { // Tracks the grid-type for the GUI
 	//----------------------------------[CELL-MODELS-PATH]---------------------------------//
 	
 	private String image_path = "asylum-floor.png"; // Image for the pathway-tiles
-	private String image_start = "start_door.png"; // Image for the start-tile
-	private String image_end = "end_door.png"; // Image for the end-tile
+	private String image_Wall = "wall.png"; // regular wall
+	private String image_start = "start-model.png"; // Image for the start-tile
+	private String image_end = "end-model.png"; // Image for the end-tile
 	private String image_topWall = "top-wall-border.png"; // Image for top-wall
 	private String image_bottomWall = "bottom-wall-border.png"; // Image for bottom-wall
 	private String image_left_right_wall = "left-right-wall.png"; // Image for left/right walls & top/left corner.
 	private String image_topCorners = "left-right-wall.png";  // Image for top-corners
-	private String image_Wall = "wall.png"; // regular wall
 	private String image_player = "player-model.png"; // Player model
 	private String image_idle_lunatic = "idle-lunatic.png"; // Lunatic model
 	private String image_chasing_lunatic = "chasing-lunatic.png"; // Chasing lunatic model

@@ -37,6 +37,10 @@
 
 #path { }
 
-#start-cell { }
+#start-cell { 
+	-fx-background-color: #141414;
+}
 
-#end-cell { }
+#end-cell { 
+	-fx-background-color: #141414;
+}

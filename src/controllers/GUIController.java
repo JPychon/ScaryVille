@@ -1,7 +1,13 @@
 package controllers;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import models.Cell;
 import models.Cell.cellType;
 import models.Coordinate;
@@ -12,7 +18,7 @@ public class GUIController  {
 	
 	private MapPane GUI_INSTANCE;
 	private Stage primary_stage;
-	
+
 	public GUIController(Stage mainStage, int rowSize, int colSize) 
 	{ 
 		primary_stage = mainStage;
@@ -39,23 +45,65 @@ public class GUIController  {
 		primary_stage.show();
 	}
 	
-	public void hideGrid() { // Hides the grid by converting all the grid-cells to a default-color background.
+	public void hideGrid(boolean isPause, boolean isLost, boolean isWin) { // Hides the grid by attaching a timeline to all the labels & changing their opacity/size to 0
 		
 		int maxGridRows = GUI_INSTANCE.getMaxRows();
 		int maxGridColumns = GUI_INSTANCE.getMaxColumns();
+		GridPane root = GUI_INSTANCE.getRootNode();
 	
-		for(int rowCounter = 1; rowCounter < maxGridRows; rowCounter++) { // skip row 0 for the hbox node
+		if(isLost) { root.setStyle("-fx-background-image: url('game-lost.png')"); }
+		if(isPause) { root.setStyle("-fx-background-image: url('game-pause.png')"); }
+		if(isWin) { root.setStyle("-fx-background-image: url('win-background.png')"); }
+	
+		for(int rowCounter = 1; rowCounter < maxGridRows; rowCounter++) { 
 			for(int colCounter = 0; colCounter < maxGridColumns; colCounter++) {
 				
-				Cell gridCell = new Cell(cellType.BLACK_SCREEN);
-				GUI_INSTANCE.getRootNode().getChildren().remove(GUI_INSTANCE.getCellFromArray(rowCounter-1, colCounter).getNode()); //  Remove the old label from the cell
-				GUI_INSTANCE.getRootNode().add(gridCell.getNode(), colCounter, rowCounter);
+			Label label = (Label) GUI_INSTANCE.getCellFromArray(rowCounter-1, colCounter).getNode();
+				
+			Timeline hide = new Timeline(new KeyFrame(Duration.seconds(1),new KeyValue(label.opacityProperty(), 0),  // Fadeout animation
+			new KeyValue(label.maxWidthProperty(),  0),new KeyValue(label.maxHeightProperty(), 0)));
+			hide.play();
 			}
 		}
 	}
 	
-	public void unhideGrid() {
-		populateGrid(false);
+	public void hideGrid_instant() { // Hides the grid instantly
+		
+		int maxGridRows = GUI_INSTANCE.getMaxRows();
+		int maxGridColumns = GUI_INSTANCE.getMaxColumns();
+	
+		for(int rowCounter = 1; rowCounter < maxGridRows; rowCounter++) { 
+			for(int colCounter = 0; colCounter < maxGridColumns; colCounter++) {
+				
+			Label label = (Label) GUI_INSTANCE.getCellFromArray(rowCounter-1, colCounter).getNode();
+			
+			Timeline hide = new Timeline(new KeyFrame(Duration.seconds(0.2),new KeyValue(label.opacityProperty(), 0),  // Fadeout animation
+			new KeyValue(label.maxWidthProperty(),  0),new KeyValue(label.maxHeightProperty(), 0)));
+			hide.play();
+			
+			}
+		}
+	}
+	
+	public void unhideGrid() { // Shows the grid by attaching a timelime to all the labels & changing their opacity/size to 1
+		
+		int maxGridRows = GUI_INSTANCE.getMaxRows();
+		int maxGridColumns = GUI_INSTANCE.getMaxColumns();
+	
+		for(int rowCounter = 1; rowCounter < maxGridRows; rowCounter++) { 
+			for(int colCounter = 0; colCounter < maxGridColumns; colCounter++) {
+				
+			Label label = (Label) GUI_INSTANCE.getCellFromArray(rowCounter-1, colCounter).getNode();
+		    double standardWidth  = label.getWidth();
+		    double standardHeight = label.getHeight();
+		    label.setMaxSize(standardWidth, standardHeight);
+		    
+			Timeline show = new Timeline(new KeyFrame(Duration.seconds(1),new KeyValue(label.opacityProperty(), 1), // Fadein animation
+			new KeyValue(label.maxWidthProperty(),  standardWidth),new KeyValue(label.maxHeightProperty(), standardHeight)));
+			show.play();
+			
+			}
+		}
 	}
 	
 	public void populateGrid(boolean isInitial) { 
@@ -63,51 +111,91 @@ public class GUIController  {
 		Coordinate[][] gridState = GameController.BOARD_CONTROLLER.getBoard().getMapGrid();
 		int maxGridRows = GUI_INSTANCE.getMaxRows();
 		int maxGridColumns = GUI_INSTANCE.getMaxColumns();
-		
-
+	
 		for(int rowCounter = 1; rowCounter < maxGridRows; rowCounter++) { // skip row 0 for the hbox node
 			for(int colCounter = 0; colCounter < maxGridColumns; colCounter++) {
 				
 					Cell gridCell;
-					
-					if((rowCounter == 1 && colCounter == 0) || (rowCounter == 1 && colCounter == maxGridColumns-1)) { // TOP LEFT/RIGHT CORNER
-						
+					if(rowCounter == 2 && colCounter == 1) // Start cell
+					{
+						gridCell = new Cell(cellType.START);
+						if(isInitial) 
+						{
+							GUI_INSTANCE.insertCellToArray(gridCell, 1, 1);
+							GUI_INSTANCE.getRootNode().add(gridCell.getNode(), 1, 2);
+							gridState[1][1].setCoordinateType(coordinateType.START);
+							continue;
+						} 
+						else 
+						{
+							GUI_INSTANCE.getRootNode().getChildren().remove(GUI_INSTANCE.getCellFromArray(1, 1).getNode());
+							GUI_INSTANCE.insertCellToArray(gridCell, 1, 1);
+							GUI_INSTANCE.getRootNode().add(gridCell.getNode(), 1, 2);
+							gridState[1][1].setCoordinateType(coordinateType.START);
+							continue;
+							
+						}
+					}
+					else if(rowCounter == maxGridRows-2 && colCounter == maxGridColumns-2) // End cell
+					{
+						gridCell = new Cell(cellType.END);
+						if(isInitial) 
+						{
+							GUI_INSTANCE.insertCellToArray(gridCell, maxGridRows-3, maxGridColumns-2);
+							GUI_INSTANCE.getRootNode().add(gridCell.getNode(), maxGridColumns-2, maxGridRows-2);
+							gridState[maxGridRows-3][maxGridColumns-2].setCoordinateType(coordinateType.EXIT);
+							continue;
+						}
+						else 
+						{
+							GUI_INSTANCE.getRootNode().getChildren().remove(GUI_INSTANCE.getCellFromArray(maxGridRows-3, maxGridColumns-2).getNode());
+							GUI_INSTANCE.insertCellToArray(gridCell, maxGridRows-3, maxGridColumns-2);
+							GUI_INSTANCE.getRootNode().add(gridCell.getNode(), maxGridColumns-2, maxGridRows-2);
+							gridState[maxGridRows-3][maxGridColumns-2].setCoordinateType(coordinateType.EXIT);
+							continue;
+						}
+					}
+					else if((rowCounter == 1 && colCounter == 0) || (rowCounter == 1 && colCounter == maxGridColumns-1)) // TOP LEFT/RIGHT CORNER
+					{ 
 						gridCell = new Cell(cellType.TOP_CORNER); // CORNER-WALL
 						gridState[rowCounter-1][colCounter].setCoordinateType(coordinateType.WALL);
-						
-					} else if ((rowCounter == maxGridRows-1 && colCounter == maxGridColumns-1) || (rowCounter == maxGridRows-1 && colCounter == 0)){
+					} 
+					else if ((rowCounter == maxGridRows-1 && colCounter == maxGridColumns-1) || (rowCounter == maxGridRows-1 && colCounter == 0))
+					{
 						
 						gridCell = new Cell(cellType.BOTTOM_CORNER); // CORNER-WALL
 						gridState[rowCounter-1][colCounter].setCoordinateType(coordinateType.WALL);
-						
-					} else if(rowCounter == 1) {
-		
+					} 
+					else if(rowCounter == 1) 
+					{
 						gridCell = new Cell(cellType.TOP_BORDER); // TOP-BORDER
 						gridState[rowCounter-1][colCounter].setCoordinateType(coordinateType.WALL);
-						
-					} else if (rowCounter == maxGridRows-1) {
-						
+					}
+					else if (rowCounter == maxGridRows-1) 
+					{
 						gridCell = new Cell(cellType.BOTTOM_BORDER); // BOTTOM-BORDER
 						gridState[rowCounter-1][colCounter].setCoordinateType(coordinateType.WALL);
-						
-					} else if (colCounter == 0 && rowCounter > 1 && rowCounter < maxGridRows-1) {
-						
+					} 
+					else if (colCounter == 0 && rowCounter > 1 && rowCounter < maxGridRows-1) 
+					{
 						gridCell = new Cell(cellType.LEFT_BORDER); // LEFT-BORDER
 						gridState[rowCounter-1][colCounter].setCoordinateType(coordinateType.WALL);
-						
-					} else if (colCounter == maxGridColumns-1 && rowCounter > 1 && rowCounter < maxGridRows-1) { 
-						
+					}
+					else if (colCounter == maxGridColumns-1 && rowCounter > 1 && rowCounter < maxGridRows-1) 
+					{ 
 						gridCell = new Cell(cellType.RIGHT_BORDER); // RIGHT-BORDER
 						gridState[rowCounter-1][colCounter].setCoordinateType(coordinateType.WALL);
-						
-					} else if (gridState[rowCounter-1][colCounter].getCoordinateType() == coordinateType.WALL) { 
-						
+					} 
+					else if (gridState[rowCounter-1][colCounter].getCoordinateType() == coordinateType.WALL) 
+					{ 
 						gridCell = new Cell(cellType.WALL); // REGULAR-WALL
-						
-					} else {
+					} 
+					else 
+					{
 						gridState[rowCounter-1][colCounter].setCoordinateType(coordinateType.BLANK);
 						gridCell = new Cell(cellType.PATH); // PATHWAY
 					}
+					
 					
 					if(isInitial) { // Initial map generation
 						GUI_INSTANCE.insertCellToArray(gridCell, rowCounter-1, colCounter);
@@ -120,19 +208,7 @@ public class GUIController  {
 					}		
 				}
 			}
-		
-			Cell startCell = new Cell(cellType.START); // Start cell
-			Cell endCell = new Cell(cellType.END); // End cell
-			
-			GUI_INSTANCE.insertCellToArray(startCell, 1, 1);
-			GUI_INSTANCE.getRootNode().add(startCell.getNode(), 1, 2);
-			gridState[1][1].setCoordinateType(coordinateType.START);
-			
-			GUI_INSTANCE.insertCellToArray(endCell, maxGridRows-3, maxGridColumns-2);
-			GUI_INSTANCE.getRootNode().add(endCell.getNode(), maxGridColumns-2, maxGridRows-2);
-			gridState[maxGridRows-3][maxGridColumns-2].setCoordinateType(coordinateType.EXIT);
 		}
-	
 	
 	public void updateGUIState(int oldRow, int oldCol, int newRow, int newCol, cellType newType) {
 		

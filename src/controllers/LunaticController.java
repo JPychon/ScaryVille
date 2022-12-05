@@ -109,8 +109,6 @@ public class LunaticController {
 				}
 			}
 		}
-		
-		enableLunatics();
 	}
 
 	public void removeLunatics() { // Removes the lunatics from the map
@@ -123,16 +121,14 @@ public class LunaticController {
 			
 			GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, currentRow, currentCol, coordinateType.BLANK); // Resets the next-cell to blank/path													
 			GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, currentRow, currentRow, cellType.PATH); // Resets the next-cell to blank/path	
-			
-			disableLunatics(); // Disable the lunatic control/movement
 		}
 		
 		lunatics.clear();
 		LUNATIC_ID_INDEX = 0;
 	}
 
-	public void disableLunatics() { for (Lunatic lunatic : lunatics) { lunatic.setControlStatus(true); } } // Disables the lunatics movement/control
-	public void enableLunatics() { for (Lunatic lunatic : lunatics) { lunatic.setControlStatus(false); } } // Enables the lunatic movement/control
+	public void disableLunatics() { for (Lunatic lunatic : lunatics) { lunatic.setControlStatus(true); roamTimer.stop(); } } // Disables the lunatics movement/control
+	public void enableLunatics() { for (Lunatic lunatic : lunatics) { lunatic.setControlStatus(false); roamTimer.playFromStart();} } // Enables the lunatic movement/control
 
 	public void roamLunatics() { // Controls the lunatics movements & line of sight updates through a timeline.
 		
@@ -167,7 +163,7 @@ public class LunaticController {
 									lunatic.setCurrentLocation(newRow, newCol);
 									GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.LUNATIC);
 									GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.LUNATIC);
-									disableLunatics();
+									removeLunatics();
 									Main.GAME_INSTANCE.gameLost(); // Game over
 									break;
 								}
@@ -189,7 +185,7 @@ public class LunaticController {
 									lunatic.setCurrentLocation(newRow, newCol);
 									GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.LUNATIC);
 									GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.LUNATIC);
-									disableLunatics();
+									removeLunatics();
 									Main.GAME_INSTANCE.gameLost(); // Game over
 									break;
 								}
@@ -211,7 +207,7 @@ public class LunaticController {
 									lunatic.setCurrentLocation(newRow, newCol);
 									GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.LUNATIC);
 									GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.LUNATIC);
-									disableLunatics();
+									removeLunatics();
 									Main.GAME_INSTANCE.gameLost(); // Game over
 									break;
 								}
@@ -233,7 +229,7 @@ public class LunaticController {
 									lunatic.setCurrentLocation(newRow, newCol);
 									GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.LUNATIC);
 									GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.LUNATIC);
-									disableLunatics();
+									removeLunatics();
 									Main.GAME_INSTANCE.gameLost(); /// Game over
 									break;
 								}
@@ -256,7 +252,7 @@ public class LunaticController {
 									
 									GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, nR, nC, coordinateType.LUNATIC_CHASING);
 									GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, nR, nC, cellType.LUNATIC_CHASING);
-									disableLunatics();
+									removeLunatics();
 									Main.GAME_INSTANCE.gameLost(); // Game over
 									break;
 									
@@ -280,15 +276,15 @@ public class LunaticController {
 									
 									GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, nR, nC, coordinateType.LUNATIC_CHASING);
 									GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, nR, nC, cellType.LUNATIC_CHASING);
-									disableLunatics();
+									removeLunatics();
 									Main.GAME_INSTANCE.gameLost(); // Game over
 									break;
 										
 								} else {
 									
-								GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, nR, nC, coordinateType.LUNATIC_CHASING);
-								GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, nR, nC,cellType.LUNATIC_CHASING);
-								lunatic.updateLunaticState(currentPlayerLocation);
+									GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, nR, nC, coordinateType.LUNATIC_CHASING);
+									GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, nR, nC,cellType.LUNATIC_CHASING);
+									lunatic.updateLunaticState(currentPlayerLocation);
 							}			
 						}
 					}

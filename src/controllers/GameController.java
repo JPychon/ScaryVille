@@ -1,6 +1,5 @@
 package controllers;
 
-import javafx.animation.Timeline;
 import javafx.stage.Stage;
 
 public class GameController {
@@ -12,6 +11,7 @@ public class GameController {
 	
 	public static boolean isPaused = false; // Game pause status
 	public static boolean isLost = false; // Game lost status
+	public static boolean isWon = false; // Game won status
 	public static boolean isGridHidden = false; // Grid blacked out for pauses/new-game/lost
 	
 	public GameController() {  }
@@ -34,42 +34,44 @@ public class GameController {
 		LUNATIC_CONTROLLER.roamLunatics();
 	}
 	
-	public void startNewGame() {
-
-		Timeline lunaticRoam = LUNATIC_CONTROLLER.getRoamTimerAnimation(); // Returns the instance of the lunatic movement-timer/animation
+	public void startNewGame() { // Starts a new game with a new layout
 		
+		if(isLost == false) { GameController.LUNATIC_CONTROLLER.disableLunatics(); }
+		GameController.GUI_CONTROLLER.hideGrid_instant();
 		PLAYER_CONTROLLER.createPlayer(); // Create new player instance
-		LUNATIC_CONTROLLER.removeLunatics(); // Delete all old lunatics
-		LUNATIC_CONTROLLER.createLunatics(); // Create new lunatics
+		LUNATIC_CONTROLLER.respawnLunatics(); // Create new lunatics
 		LUNATIC_CONTROLLER.roamLunatics(); // Start their movement & pathfinding logic
-		lunaticRoam.playFromStart(); // Start their animation
+		GameController.GUI_CONTROLLER.unhideGrid();
 		isPaused = false;
 		isLost = false;
+		isWon = false;
 		isGridHidden = false;
 	}
 	
-	public void pauseGame() {
+	public void pauseGame(boolean isPause, boolean isLost, boolean isWin) { // Pauses the game
 		
-		Timeline lunaticRoam = LUNATIC_CONTROLLER.getRoamTimerAnimation(); // Returns the instance of the lunatic movement-timer/animation
-		if(isPaused) {
+		if(isPaused) 
+		{
 			GameController.GUI_CONTROLLER.unhideGrid();
+			GameController.LUNATIC_CONTROLLER.enableLunatics();
 			isGridHidden = false;
 			isPaused = false;
-			lunaticRoam.playFromStart();
 			
 		} else {
 			
 			isPaused = true;
-			GameController.GUI_CONTROLLER.hideGrid();
+			GameController.GUI_CONTROLLER.hideGrid(isPause, isLost, isWin); 
+			GameController.LUNATIC_CONTROLLER.disableLunatics();
 			isGridHidden = true;
-			lunaticRoam.stop();
 		}
 	}
 	
 	public void gameLost() { // Stops the game when the player loses to the lunatics.
 		
-		pauseGame();
 		isLost = true;
-		//startNewGame();
+		GameController.GUI_CONTROLLER.hideGrid(false, true, false);
+		isGridHidden = true;
 	}
+	
+	public void gameWon() { isWon = true; }
 }

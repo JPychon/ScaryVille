@@ -8,7 +8,6 @@ import controllers.GameController;
 import controllers.LunaticController;
 import models.Cell.cellType;
 import models.Coordinate.coordinateType;
-import scaryville.Main;
 
 public class Lunatic {
 

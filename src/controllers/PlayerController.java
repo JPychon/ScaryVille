@@ -42,7 +42,7 @@ public class PlayerController {
 			int currentCol = currentPlayerLocation.getColumn(); // Current Y location
 			int newRow, newCol;
 			
-			if(Main.GAME_INSTANCE.isGamePaused() == false) {
+			if(GameController.isPaused == false && GameController.isLost == false) {
 				
 				switch(next_move) 
 				{
@@ -54,9 +54,9 @@ public class PlayerController {
 						if (getCellType(newRow, newCol, cellType.END)) 
 						{
 							removePlayer(); // Remove the player instance
-							GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridpane
-							Main.GAME_INSTANCE.pauseGame();
-							Main.GAME_INSTANCE.startNewGame(); // Start a new game
+							GameController.LUNATIC_CONTROLLER.removeLunatics();
+							Main.GAME_INSTANCE.pauseGame(false, false, true);
+							Main.GAME_INSTANCE.gameWon();
 							break;
 						}
 						if (getCellType(newRow, newCol, cellType.PATH)) 
@@ -68,7 +68,7 @@ public class PlayerController {
 						}	
 						if ((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) 
 						{
-							GameController.LUNATIC_CONTROLLER.disableLunatics();
+							GameController.LUNATIC_CONTROLLER.removeLunatics();
 							Main.GAME_INSTANCE.gameLost();
 							break;
 						}
@@ -82,9 +82,9 @@ public class PlayerController {
 						if (getCellType(newRow, newCol, cellType.END)) 
 						{
 							removePlayer();
-							GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridPane when the button is clicked.
-							Main.GAME_INSTANCE.pauseGame();
-							Main.GAME_INSTANCE.startNewGame();
+							GameController.LUNATIC_CONTROLLER.removeLunatics();
+							Main.GAME_INSTANCE.pauseGame(false, false, true);
+							Main.GAME_INSTANCE.gameWon();
 							break;
 						}
 						if (getCellType(newRow, newCol, cellType.PATH)) 
@@ -96,7 +96,7 @@ public class PlayerController {
 						}
 						if ((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) 
 						{
-							GameController.LUNATIC_CONTROLLER.disableLunatics();
+							GameController.LUNATIC_CONTROLLER.removeLunatics();
 							Main.GAME_INSTANCE.gameLost();
 							break;
 						}
@@ -110,9 +110,9 @@ public class PlayerController {
 						if (getCellType(newRow, newCol, cellType.END)) 
 						{
 							removePlayer();
-							GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridPane when the button is clicked.
-							Main.GAME_INSTANCE.pauseGame();
-							Main.GAME_INSTANCE.startNewGame();
+							GameController.LUNATIC_CONTROLLER.removeLunatics();
+							Main.GAME_INSTANCE.pauseGame(false, false, true);
+							Main.GAME_INSTANCE.gameWon();
 							break;
 						}
 						if (getCellType(newRow, newCol, cellType.PATH)) 
@@ -124,7 +124,7 @@ public class PlayerController {
 						}
 						if ((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) 
 						{ 
-							GameController.LUNATIC_CONTROLLER.disableLunatics();
+							GameController.LUNATIC_CONTROLLER.removeLunatics();
 							Main.GAME_INSTANCE.gameLost();	
 							break;
 						}
@@ -138,9 +138,9 @@ public class PlayerController {
 						if (getCellType(newRow, newCol, cellType.END)) 
 						{
 							removePlayer();
-							GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridPane when the button is clicked.
-							Main.GAME_INSTANCE.pauseGame();
-							Main.GAME_INSTANCE.startNewGame();
+							GameController.LUNATIC_CONTROLLER.removeLunatics();
+							Main.GAME_INSTANCE.pauseGame(false, false, true);
+							Main.GAME_INSTANCE.gameWon();
 							break;
 						}
 						if (getCellType(newRow, newCol, cellType.PATH)) 
@@ -152,7 +152,7 @@ public class PlayerController {
 						}
 						if ((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) 
 						{
-							GameController.LUNATIC_CONTROLLER.disableLunatics();
+							GameController.LUNATIC_CONTROLLER.removeLunatics();
 							Main.GAME_INSTANCE.gameLost();	
 							break;
 						}
