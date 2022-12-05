@@ -163,7 +163,7 @@ public class Cell { // Tracks the grid-type for the GUI
 				CELL_LABEL.setGraphic(labelImageView);
 				break;
 				
-			case LUNATIC_CHASING:
+			case LUNATIC_CHASING: // Lunatic chasing
 				cellType = cellType.LUNATIC_CHASING;
 				CELL_LABEL.setId("lunatic-cell");
 				labelImage = new Image(image_chasing_lunatic);

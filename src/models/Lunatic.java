@@ -50,16 +50,30 @@ public class Lunatic {
 			lunatic_id = LunaticController.LUNATIC_ID_INDEX; // Assigns a new ID to this instance through the controller ID index.
 			isFrozen = false; // Enables controls
 			currentLocation = spawnLocation;
+			pathToPlayer = new ArrayList<Coordinate>();
 		}
 	
 	private static final Random randomDirection = new Random(); // Random instance for picking the next direction
 	
 	private static lunaticNextMove nextMove() { // Static method to pick the next move.
 		lunaticNextMove[] moves = lunaticNextMove.values(); // Creates an array of the enum values
-		return moves[randomDirection.nextInt(moves.length-1)]; // Picks a random value based on the enum-length & returns it.
+		return moves[randomDirection.nextInt(moves.length)]; // Picks a random value based on the enum-length & returns it.
 	}
 	
-	public lunaticNextMove roam() { if(!isFrozen) { return nextMove(); } else { return lunaticNextMove.IDLE; } }
+	public lunaticNextMove roam(int currentRow, int currentCol)  // Returns the next lunatic move in a walkable cell.
+	{ 
+		lunaticNextMove move = lunaticNextMove.IDLE; // Default case
+		if(!isFrozen) 
+		{
+			boolean isWalkable = false;
+			while(!isWalkable) // Don't return a value until the next move is walkable.
+			{
+				move = Lunatic.nextMove();
+				isWalkable = PathFinder.isCellWalkable(currentRow-1, currentCol, move);
+			}
+		}
+		return move;
+	}
 	
 	public int getPathIterator() { return currentPathIterator; }
 	public int getLunaticID() { return lunatic_id; }

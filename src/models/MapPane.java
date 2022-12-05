@@ -12,6 +12,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.Glow;
 import javafx.scene.effect.InnerShadow;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -81,16 +82,30 @@ public class MapPane {
 		newGameButton.setId("hbox-new-game-button");
 		HBox.setMargin(newGameButton, new Insets(0, 10, 0, 0)); // Add margins to the right
 		
+		Button pauseGameButton = new Button("Pause");
+		pauseGameButton.setId("hbox-pause-game-button");
+		HBox.setMargin(pauseGameButton, new Insets(0, 0, 0, 10)); // Add margins to the right
+
+		
 		Effect shadow = new InnerShadow(); 
 		Effect glow = new Glow(0.5);
 		
-		newGameButton.setOnMousePressed(new MouseController()); // Attach an event listener
+		newGameButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new MouseController());
+		//newGameButton.setOnMousePressed(new MouseController()); // Attach an event listener
 		newGameButton.setOnMouseEntered(e -> {
 			newGameButton.setEffect(shadow);
 			newGameButton.setEffect(glow);
 		}); // Inner shadow & glow when the mouse hovers
 		
+		pauseGameButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new MouseController());
+		//pauseGameButton.setOnMousePressed(new MouseController()); // Attach an event listener
+		pauseGameButton.setOnMouseEntered(e -> {
+			pauseGameButton.setEffect(shadow);
+			pauseGameButton.setEffect(glow);
+		}); // Inner shadow & glow when the mouse hovers
+		
 		newGameButton.setOnMouseExited(e -> newGameButton.setEffect(null)); // Remove shadow when mouse stops hovering
+		pauseGameButton.setOnMouseExited(e -> pauseGameButton.setEffect(null)); // Remove shadow when mouse stops hovering
 		
 		DropShadow titleShadow = new DropShadow();
 		titleShadow.setColor(new Color(0.6447, 0.1164, 0.1164, 1.0));
@@ -107,7 +122,7 @@ public class MapPane {
 		
 		toolBar.getStyleClass().add("hbox-toolbar");
 		toolBar.setAlignment(Pos.CENTER);
-		toolBar.getChildren().addAll(leftFill, titleLabel, rightFill, newGameButton);
+		toolBar.getChildren().addAll(pauseGameButton, leftFill, titleLabel, rightFill, newGameButton);
 		rootNode.add(toolBar, 0, 0, maxGridColumns, 1); // Add the hbox to the rootnode spanning row 0 & the columns.
 	}
 }

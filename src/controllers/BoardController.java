@@ -39,7 +39,7 @@ public class BoardController {
 					isWall = random.nextBoolean(); 
 					wallCounter = 2; }
 				
-				if(isWall && totalWallModules >= 1) {
+				if(isWall && totalWallModules >= 1 && ((rowCount > 2 || colCount > 3) && (rowCount < maxRows-4 || colCount < maxColumns-4))) { // Guarantee you can always start/end
 					MAP_INSTANCE.addGridCoordinate(rowCount, colCount, coordinateType.WALL);
 					isWall = false;
 					totalWallModules--; // Decrement the total walls needed.

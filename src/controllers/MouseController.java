@@ -1,18 +1,20 @@
 package controllers;
 
+import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Control;
 import scaryville.Main;
 
-public class MouseController implements EventHandler<MouseEvent>  {
+public class MouseController implements EventHandler<Event>  {
 
 	@Override
-	public void handle(MouseEvent event) {
-		if(MouseButton.PRIMARY.equals(event.getButton())) { // Left click
-			
-			GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridpane when the button is clicked.
-			Main.GAME_INSTANCE.startNewGame(); // Starts a new game
+	public void handle(Event event) 
+	{
+		String ID = ((Control)event.getSource()).getId(); // Returns the ID of the button pressed
+		switch(ID) 
+		{
+			case "hbox-new-game-button": GameController.GUI_CONTROLLER.resetRootNode(); Main.GAME_INSTANCE.startNewGame(); break;
+			case "hbox-pause-game-button": if(!GameController.isLost) { Main.GAME_INSTANCE.pauseGame(); } break;
 		}
 	}
 }

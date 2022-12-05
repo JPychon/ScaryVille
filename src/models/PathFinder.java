@@ -5,6 +5,7 @@ import java.util.List;
 
 import controllers.GameController;
 import models.Cell.cellType;
+import models.Lunatic.lunaticNextMove;
 
 public class PathFinder { // Path finder algorithm for lunatics AI
 	
@@ -16,16 +17,60 @@ public class PathFinder { // Path finder algorithm for lunatics AI
 		
 		if(node.row < 1 || node.row > grid.length - 1) return false;
 		if(node.col < 0 || node.col > grid[0].length - 1) return false;
-		if(grid[node.row][node.col].getCellType() == cellType.WALL) return false;
-		if(grid[node.row][node.col].getCellType() == cellType.TOP_BORDER) return false;
-		if(grid[node.row][node.col].getCellType() == cellType.BOTTOM_BORDER) return false;
-		if(grid[node.row][node.col].getCellType() == cellType.LEFT_BORDER) return false;
-		if(grid[node.row][node.col].getCellType() == cellType.RIGHT_BORDER) return false;
-		if(grid[node.row][node.col].getCellType() == cellType.TOP_CORNER) return false;
-		if(grid[node.row][node.col].getCellType() == cellType.BOTTOM_CORNER) return false;
-		if(grid[node.row][node.col].getCellType() == cellType.START) return false;
-		if(grid[node.row][node.col].getCellType() == cellType.START) return false;
+		if(grid[node.row-1][node.col].getCellType() == cellType.WALL) return false;
+		if(grid[node.row-1][node.col].getCellType() == cellType.TOP_BORDER) return false;
+		if(grid[node.row-1][node.col].getCellType() == cellType.BOTTOM_BORDER) return false;
+		if(grid[node.row-1][node.col].getCellType() == cellType.LEFT_BORDER) return false;
+		if(grid[node.row-1][node.col].getCellType() == cellType.RIGHT_BORDER) return false;
+		if(grid[node.row-1][node.col].getCellType() == cellType.TOP_CORNER) return false;
+		if(grid[node.row-1][node.col].getCellType() == cellType.BOTTOM_CORNER) return false;
+		if(grid[node.row-1][node.col].getCellType() == cellType.START) return false;
+		if(grid[node.row-1][node.col].getCellType() == cellType.START) return false;
 		return true;
+	}
+	
+	@SuppressWarnings("incomplete-switch")
+	public static boolean isCellWalkable(int currentRow, int currentCol, lunaticNextMove move) 
+	{ // Method used to generate the lunatic next move, allows for more smooth movement & avoids them being stuck on walls.
+		
+		Cell[][] grid = GameController.GUI_CONTROLLER.getGUI().getGrid();
+		int nextRow, nextCol;
+		switch(move) 
+		{
+			case UP: 
+					nextRow = currentRow-1; nextCol = currentCol;
+					if((grid[nextRow][nextCol].getCellType() == cellType.PATH) 
+							|| (grid[nextRow][nextCol].getCellType() == cellType.PLAYER)
+							|| (grid[nextRow][nextCol].getCellType() == cellType.LUNATIC))
+					{
+						return true;
+					}
+			case DOWN: 
+					nextRow = currentRow+1; nextCol = currentCol;
+					if((grid[nextRow][nextCol].getCellType() == cellType.PATH)
+							|| (grid[nextRow][nextCol].getCellType() == cellType.PLAYER)
+							|| (grid[nextRow][nextCol].getCellType() == cellType.LUNATIC))
+					{
+						return true;
+					}
+			case LEFT: 
+					nextRow = currentRow; nextCol = currentCol-1;
+					if((grid[nextRow][nextCol].getCellType() == cellType.PATH)
+							|| (grid[nextRow][nextCol].getCellType() == cellType.PLAYER)
+							|| (grid[nextRow][nextCol].getCellType() == cellType.LUNATIC))
+					{
+						return true;
+					}
+			case RIGHT: 
+					nextRow = currentRow; nextCol = currentCol+1;
+					if((grid[nextRow][nextCol].getCellType() == cellType.PATH)
+							|| (grid[nextRow][nextCol].getCellType() == cellType.PLAYER)
+							|| (grid[nextRow][nextCol].getCellType() == cellType.LUNATIC))
+					{
+						return true;
+					}
+		}
+		return false;
 	}
 	
 	public static List<Node> FindNeighbors(Node node) { // Returns a list of the current node neighbors (up/dow/left/right) & checks if they are walkable, then adds to a list.
@@ -69,8 +114,11 @@ public class PathFinder { // Path finder algorithm for lunatics AI
                 }
             }
 
-            if (!finished && newOpen.isEmpty())
-                return null;
+            if (!finished && newOpen.isEmpty()) {
+            	List<Coordinate> emptyPath = new ArrayList<>();
+            	emptyPath.add(startPoint);
+            	return emptyPath; // Returns an list with the current starting point instead of null.
+            }
         }
 
         List<Node> path = new ArrayList<>();

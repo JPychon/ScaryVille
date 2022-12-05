@@ -10,7 +10,8 @@ public class GameController {
 	public static PlayerController PLAYER_CONTROLLER; // Static instance of the Player Controller
 	public static LunaticController LUNATIC_CONTROLLER; // Static instance of the Lunatic Controller
 	
-	private static boolean isPaused = false; // Game pause status
+	public static boolean isPaused = false; // Game pause status
+	public static boolean isLost = false; // Game lost status
 	
 	public GameController() {  }
 	public boolean isGamePaused() { return isPaused; }
@@ -36,33 +37,35 @@ public class GameController {
 
 		Timeline lunaticRoam = LUNATIC_CONTROLLER.getRoamTimerAnimation(); // Returns the instance of the lunatic movement-timer/animation
 		
-		PLAYER_CONTROLLER.createPlayer();
-		LUNATIC_CONTROLLER.respawnLunatics();
-		LUNATIC_CONTROLLER.roamLunatics();
-		lunaticRoam.playFromStart();
+		PLAYER_CONTROLLER.createPlayer(); // Create new player instance
+		LUNATIC_CONTROLLER.removeLunatics(); // Delete all old lunatics
+		LUNATIC_CONTROLLER.createLunatics(); // Create new lunatics
+		LUNATIC_CONTROLLER.roamLunatics(); // Start their movement & pathfinding logic
+		lunaticRoam.playFromStart(); // Start their animation
+		isPaused = false;
+		isLost = false;
 	}
 	
 	public void pauseGame() {
 		
 		Timeline lunaticRoam = LUNATIC_CONTROLLER.getRoamTimerAnimation(); // Returns the instance of the lunatic movement-timer/animation
-		
 		if(isPaused) {
 			
 			isPaused = false;
 			lunaticRoam.playFromStart();
-			//System.out.println("[DEBUG::GAME_CONTROLLER] Game [UNPAUSED]");
 			
 		} else {
 			
 			isPaused = true;
 			lunaticRoam.stop();
-			//System.out.println("[DEBUG::GAME_CONTROLLER] Game [PAUSED]");
 		}
 	}
 	
 	public void gameLost() { // Stops the game when the player loses to the lunatics.
-		
-		pauseGame(); // Pauses the game [disables lunatics movement too]
-		startNewGame();
+		isPaused = true;
+		isLost = true;
+		Timeline lunaticRoam = LUNATIC_CONTROLLER.getRoamTimerAnimation(); // Returns the instance of the lunatic movement-timer/animation
+		lunaticRoam.stop();
+		//startNewGame();
 	}
 }
