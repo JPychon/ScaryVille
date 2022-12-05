@@ -47,6 +47,7 @@ public class Cell { // Tracks the grid-type for the GUI
 		PLAYER,
 		LUNATIC,
 		LUNATIC_CHASING,
+		BLACK_SCREEN,
 	}
 	
 	@SuppressWarnings("static-access") // Enums are inherently static; thus, supressing the warning.
@@ -170,6 +171,11 @@ public class Cell { // Tracks the grid-type for the GUI
 				labelImageView = new ImageView(labelImage);
 				labelImageView.setPreserveRatio(true);
 				CELL_LABEL.setGraphic(labelImageView);
+				break;
+				
+			case BLACK_SCREEN: // Lunatic chasing
+				cellType = cellType.BLACK_SCREEN;
+				CELL_LABEL.setId("dark-screen");
 				break;
 				
 		}

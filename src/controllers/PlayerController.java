@@ -42,75 +42,91 @@ public class PlayerController {
 			int currentCol = currentPlayerLocation.getColumn(); // Current Y location
 			int newRow, newCol;
 			
-			if(!Main.GAME_INSTANCE.isGamePaused()) {
+			if(Main.GAME_INSTANCE.isGamePaused() == false) {
 				
-				switch(next_move) {
-				case LEFT: // Move to left-cell
+				switch(next_move) 
+				{
+					case LEFT: // Move to left-cell
 			
 						newRow = currentRow;
 						newCol = currentCol-1;
 			
-						if(getCellType(newRow, newCol, cellType.END)) {
+						if (getCellType(newRow, newCol, cellType.END)) 
+						{
 							removePlayer(); // Remove the player instance
 							GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridpane
 							Main.GAME_INSTANCE.pauseGame();
 							Main.GAME_INSTANCE.startNewGame(); // Start a new game
-							
-						} else if(getCellType(newRow, newCol, cellType.PATH)) {
+							break;
+						}
+						if (getCellType(newRow, newCol, cellType.PATH)) 
+						{
 							updatePlayerLocation(newRow, newCol);
 							GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
 							GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.PLAYER);
 							break;
-							
-						} else if((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) {
+						}	
+						if ((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) 
+						{
+							GameController.LUNATIC_CONTROLLER.disableLunatics();
 							Main.GAME_INSTANCE.gameLost();
-							
+							break;
 						}
 						break;	
 						
-				case RIGHT: // Move to right-cell
+					case RIGHT: // Move to right-cell
 					
 						newRow = currentRow;
 						newCol = currentCol+1;
 						
-						if(getCellType(newRow, newCol, cellType.END)) {
+						if (getCellType(newRow, newCol, cellType.END)) 
+						{
 							removePlayer();
 							GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridPane when the button is clicked.
 							Main.GAME_INSTANCE.pauseGame();
 							Main.GAME_INSTANCE.startNewGame();
-							
-						} else if(getCellType(newRow, newCol, cellType.PATH)) {
+							break;
+						}
+						if (getCellType(newRow, newCol, cellType.PATH)) 
+						{
 							updatePlayerLocation(newRow, newCol);
 							GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
 							GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.PLAYER);
 							break;
-						
-						} else if((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) {
+						}
+						if ((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) 
+						{
+							GameController.LUNATIC_CONTROLLER.disableLunatics();
 							Main.GAME_INSTANCE.gameLost();
-							
+							break;
 						}
 						break;
 						
-				case UP: // Move to up-cell
+					case UP: // Move to up-cell
 					
 						newRow = currentRow-1;
 						newCol = currentCol;
 						
-						if(getCellType(newRow, newCol, cellType.END)) {
+						if (getCellType(newRow, newCol, cellType.END)) 
+						{
 							removePlayer();
 							GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridPane when the button is clicked.
 							Main.GAME_INSTANCE.pauseGame();
 							Main.GAME_INSTANCE.startNewGame();
-							
-						} else if(getCellType(newRow, newCol, cellType.PATH)) {
+							break;
+						}
+						if (getCellType(newRow, newCol, cellType.PATH)) 
+						{
 							updatePlayerLocation(newRow, newCol);
 							GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
 							GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.PLAYER);
 							break;
-						
-						} else if((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) {
-							Main.GAME_INSTANCE.gameLost();
-							
+						}
+						if ((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) 
+						{ 
+							GameController.LUNATIC_CONTROLLER.disableLunatics();
+							Main.GAME_INSTANCE.gameLost();	
+							break;
 						}
 						break;
 						
@@ -119,27 +135,32 @@ public class PlayerController {
 						newRow = currentRow+1;
 						newCol = currentCol;
 	
-						if(getCellType(newRow, newCol, cellType.END)) {
+						if (getCellType(newRow, newCol, cellType.END)) 
+						{
 							removePlayer();
 							GameController.GUI_CONTROLLER.resetRootNode(); // Reset the gridPane when the button is clicked.
 							Main.GAME_INSTANCE.pauseGame();
 							Main.GAME_INSTANCE.startNewGame();
-							
-						} else if(getCellType(newRow, newCol, cellType.PATH)) {
+							break;
+						}
+						if (getCellType(newRow, newCol, cellType.PATH)) 
+						{
 							updatePlayerLocation(newRow, newCol);
 							GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.PLAYER);
 							GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.PLAYER);
 							break;
-						
-						} else if((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) {
-							Main.GAME_INSTANCE.gameLost();
-							
+						}
+						if ((getCellType(newRow, newCol, cellType.LUNATIC)) || (getCellType(newRow, newCol, cellType.LUNATIC_CHASING))) 
+						{
+							GameController.LUNATIC_CONTROLLER.disableLunatics();
+							Main.GAME_INSTANCE.gameLost();	
+							break;
 						}
 						break;
+					}
 				}
 			}
-		}
-		
+			
 		public boolean getCellType(int newRow, int newCol, cellType type) {
 			return GameController.GUI_CONTROLLER.getGUI().getGridCellType(newRow-1, newCol) == type;
 		}

@@ -31,8 +31,8 @@
 	-fx-background-color: black;
 }
 
-#end-game-cell {
-	-fx-background-color: black;
+#dark-screen {
+	-fx-background-color: #141414;
 }
 
 #path { }

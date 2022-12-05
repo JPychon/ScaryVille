@@ -12,6 +12,7 @@ public class GameController {
 	
 	public static boolean isPaused = false; // Game pause status
 	public static boolean isLost = false; // Game lost status
+	public static boolean isGridHidden = false; // Grid blacked out for pauses/new-game/lost
 	
 	public GameController() {  }
 	public boolean isGamePaused() { return isPaused; }
@@ -44,28 +45,31 @@ public class GameController {
 		lunaticRoam.playFromStart(); // Start their animation
 		isPaused = false;
 		isLost = false;
+		isGridHidden = false;
 	}
 	
 	public void pauseGame() {
 		
 		Timeline lunaticRoam = LUNATIC_CONTROLLER.getRoamTimerAnimation(); // Returns the instance of the lunatic movement-timer/animation
 		if(isPaused) {
-			
+			GameController.GUI_CONTROLLER.unhideGrid();
+			isGridHidden = false;
 			isPaused = false;
 			lunaticRoam.playFromStart();
 			
 		} else {
 			
 			isPaused = true;
+			GameController.GUI_CONTROLLER.hideGrid();
+			isGridHidden = true;
 			lunaticRoam.stop();
 		}
 	}
 	
 	public void gameLost() { // Stops the game when the player loses to the lunatics.
-		isPaused = true;
+		
+		pauseGame();
 		isLost = true;
-		Timeline lunaticRoam = LUNATIC_CONTROLLER.getRoamTimerAnimation(); // Returns the instance of the lunatic movement-timer/animation
-		lunaticRoam.stop();
 		//startNewGame();
 	}
 }

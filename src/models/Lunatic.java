@@ -8,6 +8,7 @@ import controllers.GameController;
 import controllers.LunaticController;
 import models.Cell.cellType;
 import models.Coordinate.coordinateType;
+import scaryville.Main;
 
 public class Lunatic {
 
@@ -63,7 +64,7 @@ public class Lunatic {
 	public lunaticNextMove roam(int currentRow, int currentCol)  // Returns the next lunatic move in a walkable cell.
 	{ 
 		lunaticNextMove move = lunaticNextMove.IDLE; // Default case
-		if(!isFrozen) 
+		if(!isFrozen && GameController.isLost == false && GameController.isPaused == false) 
 		{
 			boolean isWalkable = false;
 			while(!isWalkable) // Don't return a value until the next move is walkable.

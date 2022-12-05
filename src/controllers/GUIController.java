@@ -39,6 +39,25 @@ public class GUIController  {
 		primary_stage.show();
 	}
 	
+	public void hideGrid() { // Hides the grid by converting all the grid-cells to a default-color background.
+		
+		int maxGridRows = GUI_INSTANCE.getMaxRows();
+		int maxGridColumns = GUI_INSTANCE.getMaxColumns();
+	
+		for(int rowCounter = 1; rowCounter < maxGridRows; rowCounter++) { // skip row 0 for the hbox node
+			for(int colCounter = 0; colCounter < maxGridColumns; colCounter++) {
+				
+				Cell gridCell = new Cell(cellType.BLACK_SCREEN);
+				GUI_INSTANCE.getRootNode().getChildren().remove(GUI_INSTANCE.getCellFromArray(rowCounter-1, colCounter).getNode()); //  Remove the old label from the cell
+				GUI_INSTANCE.getRootNode().add(gridCell.getNode(), colCounter, rowCounter);
+			}
+		}
+	}
+	
+	public void unhideGrid() {
+		populateGrid(false);
+	}
+	
 	public void populateGrid(boolean isInitial) { 
 		
 		Coordinate[][] gridState = GameController.BOARD_CONTROLLER.getBoard().getMapGrid();

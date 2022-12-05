@@ -69,7 +69,6 @@ public class MapPane {
 		rootNode.getStylesheets().add(stylePath_labels); // Reference the grid-labels style sheet
 		rootNode.getStylesheets().add(stylePath_toolbar); // Reference the hbox-toolbar style sheet
 		rootNode.getStylesheets().add(stylePath_gridPane); // Reference the gridpane style sheet
-		
 		rootNode.getStyleClass().add("gridpane");
 	}
 	
@@ -86,25 +85,21 @@ public class MapPane {
 		pauseGameButton.setId("hbox-pause-game-button");
 		HBox.setMargin(pauseGameButton, new Insets(0, 0, 0, 10)); // Add margins to the right
 
-		
 		Effect shadow = new InnerShadow(); 
 		Effect glow = new Glow(0.5);
 		
 		newGameButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new MouseController());
-		//newGameButton.setOnMousePressed(new MouseController()); // Attach an event listener
 		newGameButton.setOnMouseEntered(e -> {
 			newGameButton.setEffect(shadow);
 			newGameButton.setEffect(glow);
 		}); // Inner shadow & glow when the mouse hovers
+		newGameButton.setOnMouseExited(e -> newGameButton.setEffect(null)); // Remove shadow when mouse stops hovering
 		
 		pauseGameButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new MouseController());
-		//pauseGameButton.setOnMousePressed(new MouseController()); // Attach an event listener
 		pauseGameButton.setOnMouseEntered(e -> {
 			pauseGameButton.setEffect(shadow);
 			pauseGameButton.setEffect(glow);
 		}); // Inner shadow & glow when the mouse hovers
-		
-		newGameButton.setOnMouseExited(e -> newGameButton.setEffect(null)); // Remove shadow when mouse stops hovering
 		pauseGameButton.setOnMouseExited(e -> pauseGameButton.setEffect(null)); // Remove shadow when mouse stops hovering
 		
 		DropShadow titleShadow = new DropShadow();
