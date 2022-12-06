@@ -31,11 +31,9 @@
 	-fx-background-color: black;
 }
 
-#dark-screen {
-	-fx-background-color: #141414;
+#path {
+	-fx-background-color: black;
 }
-
-#path { }
 
 #start-cell { 
 	-fx-background-color: #141414;

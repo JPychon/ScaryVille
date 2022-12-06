@@ -1,11 +1,12 @@
 package controllers;
 
-
 import models.Coordinate;
 import models.Lunatic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -15,13 +16,12 @@ import models.Lunatic.lunaticNextMove;
 import models.Lunatic.lunaticState;
 import scaryville.Main;
 import models.Coordinate.coordinateType;
-
-
+import models.GridPathFinder;
 
 public class LunaticController {
 
 	private static int MAX_LUNATICS = 15; // Max instnaces of lunatics to create
-	private static double LUNATICS_SPEED = 0.3; // Controls how often the timeline updates their movement.
+	private static double LUNATICS_SPEED = 0.4; // Controls how often the timeline updates their movement.
 	
 	public static int LUNATIC_ID_INDEX = 0; // Assign an ID for every spawned lunatic (increments per new instance)
 	
@@ -35,82 +35,39 @@ public class LunaticController {
 	
 	public Timeline getRoamTimerAnimation() { return roamTimer; }
 	public void resumeRoamTimerAnimation() { roamTimer.playFromStart(); }
-	
-	public void createLunatics() { // Creates the lunatics in random-valid locations on the map
 
-		int spawned_lunatics = MAX_LUNATICS;
-		boolean lunaticSpawned = false;
+	public void createLunatics()
+	{
+		int maxRows = GameController.BOARD_CONTROLLER.getBoard().getMaxRows();
+		int maxColumns = GameController.BOARD_CONTROLLER.getBoard().getMaxColumns();
+		
+		Random randomSpawn = new Random(); // Random instance for the spawn location of each lunatic
+		boolean hasSpawned = false; // Flag whether the lunatic instance has been created or not
+		
+		for (int i = 0; i < MAX_LUNATICS; i++) 
+		{
+			hasSpawned = false;
+			while(!hasSpawned) // Keeps running the code until a lunatic has been spawned in an open cell
+			{
+				int spawnRow = randomSpawn.nextInt((maxRows-2 - 5) +1) + 5; // Random value for the row (5-max range)
+				int spawnCol = randomSpawn.nextInt((maxColumns-1 - 5) +1) + 5; // Random value for the column (5-max range)
+				if(GridPathFinder.IsWalkable(spawnRow, spawnCol)) // Check if this value is valid 
+				{
+					Lunatic lunaticInstance = new Lunatic();
 
-		Coordinate[][] boardState = GameController.BOARD_CONTROLLER.getBoard().getMapGrid();
-
-		// This is ugly code, any tips on how to implement it better?
-		// It's meant to loop through the 2D array, pick a value, check the coordinate
-		// type & spawn the lunatic if it's valid.
-		// To avoid cluster, I tried iterating by +10
-		// the inner loops iteration per successful new instance
-
-		for (int row = 5; row < boardState.length - 1; row += (lunaticSpawned ? 5 : 1)) { 
-			for (int col = 10; col < boardState[row].length - 1; col += (lunaticSpawned ? 10 : 1)) { 
-
-				if (spawned_lunatics == 0)
-					break;
-				if (boardState[row][col].getCoordinateType() == coordinateType.BLANK) {
-
-					Lunatic lunaticInstance = new Lunatic(); 
-					
-					LUNATIC_ID_INDEX++; // Increment the ID per new lunatic.
-					
 					lunaticInstance.setLunaticState(lunaticState.idle_roam);
-					lunaticInstance.setSpawnLocation(row, col);
+					lunaticInstance.setSpawnLocation(spawnRow, spawnCol);
 					lunatics.add(lunaticInstance);
-
-					GameController.BOARD_CONTROLLER.updateBoardState(row, col, row, col, coordinateType.LUNATIC);
-					GameController.GUI_CONTROLLER.updateGUIState(row, col, row, col, cellType.LUNATIC);
-
-					spawned_lunatics--;
-					lunaticSpawned = true;
-					col += 5;
-				} else {
-					lunaticSpawned = false;
-				}
-			}
-		}
-	}
-
-	public void respawnLunatics() {
-		
-		int spawned_lunatics = lunatics.size() - 1;
-		boolean lunaticSpawned = false;
-		
-		Coordinate[][] boardState = GameController.BOARD_CONTROLLER.getBoard().getMapGrid();
-
-		for (int row = 5; row < boardState.length - 1; row += (lunaticSpawned ? 5 : 1)) { 
-			for (int col = 10; col < boardState[row].length - 1; col += (lunaticSpawned ? 10 : 1)) { 
-
-				if (spawned_lunatics == 0)
-					break;
-				if (boardState[row][col].getCoordinateType() == coordinateType.BLANK) {
-
-					Lunatic lunaticInstance = new Lunatic(); 
+					
 					LUNATIC_ID_INDEX++; // Increment the ID per new lunatic.
 					
-					lunaticInstance.setLunaticState(lunaticState.idle_roam);
-					lunaticInstance.setSpawnLocation(row, col);
-					lunatics.add(lunaticInstance);		
-
-					GameController.BOARD_CONTROLLER.updateBoardState(row, col, row, col, coordinateType.LUNATIC);
-					GameController.GUI_CONTROLLER.updateGUIState(row, col, row, col, cellType.LUNATIC);
-
-					spawned_lunatics--;
-					lunaticSpawned = true;
-					col += 5;
-				} else {
-					lunaticSpawned = false;
+					GameController.BOARD_CONTROLLER.updateBoardState(spawnRow, spawnCol, spawnRow, spawnCol, coordinateType.LUNATIC);
+					GameController.GUI_CONTROLLER.updateGUIState(spawnRow, spawnCol, spawnRow, spawnCol, cellType.LUNATIC);
+					hasSpawned = true;
 				}
 			}
 		}
 	}
-
 	public void removeLunatics() { // Removes the lunatics from the map
 
 		for (Lunatic lunatic : lunatics) {
@@ -137,9 +94,8 @@ public class LunaticController {
 				roamTimer = new Timeline(new KeyFrame(Duration.seconds(LUNATICS_SPEED), e -> {
 				int currentRow, currentCol, newRow, newCol;
 				Coordinate currentPlayerLocation = GameController.PLAYER_CONTROLLER.getPlayerLocation();
-				for (Lunatic lunatic : lunatics) {
+				mainLoop:for (Lunatic lunatic : lunatics) {
 	
-						//int lunaticID = lunatic.getLunaticID();
 						if(lunatic.getLunaticState() == lunaticState.idle_roam) {
 						
 							currentRow = lunatic.getCurrentLocation().getRow();
@@ -156,7 +112,6 @@ public class LunaticController {
 									GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.LUNATIC);
 									GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.LUNATIC);
 									lunatic.updateLunaticState(currentPlayerLocation);
-									break;
 								}
 								if (getCellType(newRow, newCol, cellType.PLAYER))  { // Catches the player
 								
@@ -165,7 +120,7 @@ public class LunaticController {
 									GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.LUNATIC);
 									removeLunatics();
 									Main.GAME_INSTANCE.gameLost(); // Game over
-									break;
+									break mainLoop;
 								}
 								break;
 	
@@ -187,7 +142,7 @@ public class LunaticController {
 									GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.LUNATIC);
 									removeLunatics();
 									Main.GAME_INSTANCE.gameLost(); // Game over
-									break;
+									break mainLoop;
 								}
 								break;
 	
@@ -209,7 +164,7 @@ public class LunaticController {
 									GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.LUNATIC);
 									removeLunatics();
 									Main.GAME_INSTANCE.gameLost(); // Game over
-									break;
+									break mainLoop;
 								}
 								break;
 	
@@ -222,7 +177,6 @@ public class LunaticController {
 									GameController.BOARD_CONTROLLER.updateBoardState(currentRow, currentCol, newRow, newCol, coordinateType.LUNATIC);
 									GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.LUNATIC);
 									lunatic.updateLunaticState(currentPlayerLocation);
-									break;
 								}
 								if (getCellType(newRow, newCol, cellType.PLAYER)) { // Catches the player
 								
@@ -231,7 +185,7 @@ public class LunaticController {
 									GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, newRow, newCol, cellType.LUNATIC);
 									removeLunatics();
 									Main.GAME_INSTANCE.gameLost(); /// Game over
-									break;
+									break mainLoop;
 								}
 								break;
 								
@@ -254,7 +208,7 @@ public class LunaticController {
 									GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, nR, nC, cellType.LUNATIC_CHASING);
 									removeLunatics();
 									Main.GAME_INSTANCE.gameLost(); // Game over
-									break;
+									break mainLoop;
 									
 								} else {
 								
@@ -278,7 +232,7 @@ public class LunaticController {
 									GameController.GUI_CONTROLLER.updateGUIState(currentRow, currentCol, nR, nC, cellType.LUNATIC_CHASING);
 									removeLunatics();
 									Main.GAME_INSTANCE.gameLost(); // Game over
-									break;
+									break mainLoop;
 										
 								} else {
 									

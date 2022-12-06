@@ -6,7 +6,6 @@ import java.util.Random;
 
 import controllers.GameController;
 import controllers.LunaticController;
-import models.Cell.cellType;
 import models.Coordinate.coordinateType;
 
 public class Lunatic {
@@ -68,8 +67,8 @@ public class Lunatic {
 			boolean isWalkable = false;
 			while(!isWalkable) // Don't return a value until the next move is walkable.
 			{
-				move = Lunatic.nextMove();
-				isWalkable = PathFinder.isCellWalkable(currentRow-1, currentCol, move);
+				move = Lunatic.nextMove(); // Gets a random value from the move enum
+				isWalkable = GridPathFinder.IsWalkable(currentRow-1, currentCol, move); // Checks if the cell corresponding with the move is possible.
 			}
 		}
 		return move;
@@ -132,15 +131,23 @@ public class Lunatic {
 		spawnLocation.setColumn(spawn.getColumn());
 	}
 	
-	public Coordinate getNextMoveToPlayer() { 
-		if(pathToPlayer == null) {
-			state = lunaticState.idle_roam;
-			return currentLocation;
-		} else {
-			Coordinate nextPath = pathToPlayer.get(0);
-			pathToPlayer.remove(0);
-			return nextPath;
-		}
+	
+	public Coordinate getNextMoveToPlayer() 
+	{
+	    if (pathToPlayer == null || pathToPlayer.size() == 0) // Check if the path is empty or not valid
+	    {
+	        pathToPlayer = GridPathFinder.FindPath(currentLocation, GameController.PLAYER_CONTROLLER.getPlayerLocation()); // Recalculate the path to the player's current location
+	    }
+	    if (pathToPlayer == null || pathToPlayer.size() == 0) // If the path is still empty or not valid, return the current location
+	    {
+	        return currentLocation;  
+	    } 
+	    else 
+	    {
+	        Coordinate nextPath = pathToPlayer.get(0);  // Return the next coordinate on the path
+	        pathToPlayer.remove(0);
+	        return nextPath;
+	    }
 	}
 	
 	public void updateLunaticState(Coordinate currentPlayerLocation) {
@@ -151,22 +158,20 @@ public class Lunatic {
 			if(checkLOS(currentPlayerLocation)) // LOS
 			{
 				setCurrentDestination(currentPlayerLocation); // Sets the destination to the player-sighting location.
-				pathToPlayer = PathFinder.FindPath(currentLocation, currentDestination); // Find the clear path to the player location.
+				pathToPlayer = GridPathFinder.FindPath(currentLocation, currentDestination); // Find the clear path to the player location.
 				state = lunaticState.chasing; // Set state to chasing
 			}
-			
 			if(!checkLOS(currentPlayerLocation)) // NO-LOS
 			{
 				// Do nothing - keep roaming.
 			}
 		}
-		
 		if(state == lunaticState.chasing)  // CHASING
 		{
 			if(checkLOS(currentPlayerLocation)) // LOS
 			{
 				setCurrentDestination(currentPlayerLocation); // Sets the destination to the NEW player-sighting location
-				pathToPlayer = PathFinder.FindPath(currentLocation, currentDestination); // Find the clear path to the NEW player location.
+				pathToPlayer = GridPathFinder.FindPath(currentLocation, currentDestination); // Find the clear path to the NEW player location.
 			}
 			
 			if(!checkLOS(currentPlayerLocation)) // NO-LOS
@@ -174,149 +179,68 @@ public class Lunatic {
 				state = lunaticState.investigating; // Investigate the last-sighting location.
 			}
 		}
-		
 		if(state == lunaticState.investigating) // INVESTIGATING
 		{
 			if(checkLOS(currentPlayerLocation)) // LOS
 			{
 				setCurrentDestination(currentPlayerLocation); // Sets the destination to the NEW player-sighting location
-				pathToPlayer = PathFinder.FindPath(currentLocation, currentDestination); // Find the clear path to the NEW player location
+				pathToPlayer = GridPathFinder.FindPath(currentLocation, currentDestination); // Find the clear path to the NEW player location
 				state = lunaticState.chasing; // Set state to chasing
 			}
 			
 			if(!checkLOS(currentPlayerLocation)) // NO-LOS
 			{
-				if(pathToPlayer.size() == 0) { // If reached the last point of sighting, reset to roaming.
+				if(pathToPlayer.size() == 0) // If reached the last point of sighting, reset to roaming.
+				{ 
 					state = lunaticState.idle_roam;
 				}
 			}
 		}
 	}
-	public boolean checkLOS(Coordinate playerLocation) { // Checks if the player is currently in any of the 4 lines of sight.
-		
-		boolean los_left = false;
-		boolean los_right = false;
-		boolean los_up = false;
-		boolean los_down = false;
-		
-		//System.out.println("[DEBUG::LUNATIC]- METHOD::checkLOS");
-		
-		for(Coordinate los : getHorizontalLineOfSight_left()) { // left
-			if(los.equals(playerLocation)) {
-				los_left = true;
-			}
+	
+	public boolean checkLOS(Coordinate playerLocation) 
+	{
+		List<List<Coordinate>> linesOfSight = new ArrayList<>();
+		linesOfSight.add(getHorizontalLineOfSight_left());
+		linesOfSight.add(getHorizontalLineOfSight_right());
+		linesOfSight.add(getVerticalLineOfSight_up());
+		linesOfSight.add(getVerticalLineOfSight_down());
+
+		for (List<Coordinate> lineOfSight : linesOfSight) {
+		    if (lineOfSight.contains(playerLocation)) {
+		        return true;
+		    }
 		}
-		for(Coordinate los : getHorizontalLineOfSight_right()) { // right
-			if(los.equals(playerLocation)) {
-				//System.out.println("[DEBUG::LUNATIC::METHOD]-[checkLOS::HORIZONTAL_RIGHT]::TRUE");
-				los_right = true;
-			}
-		}
-		for(Coordinate los : getVerticalLineOfSight_up()) { // up
-			if(los.equals(playerLocation)) {
-				//System.out.println("[DEBUG::LUNATIC::METHOD]-[checkLOS::VERTICAL_UP]::TRUE");
-				los_up = true;
-			}
-		}
-		for(Coordinate los : getVerticalLineOfSight_down()) { // down
-			if(los.equals(playerLocation)) { 
-				//System.out.println("[DEBUG::LUNATIC::METHOD]-[checkLOS::VERTICAL_DOWN]::TRUE");
-				los_down = true;
-			}
-		}
-		
-		if(los_up || los_down || los_left || los_right) return true;
-		
-		//System.out.println("[DEBUG::LUNATIC::METHOD]-[checkLOS]::FALSE");
 		return false;
 	}
+	
+	public void updateLunaticLOS() // Updates each lunatic line of sight in all 4 directions
+	{ 
 		
-	public void updateLunaticLOS() { // Updates each lunatic line of sight in all 4 directions
-		
-		int maxGridRows = GameController.GUI_CONTROLLER.getGUI().getMaxRows();
-		int maxGridColumns = GameController.GUI_CONTROLLER.getGUI().getMaxColumns();
-		
-		//System.out.println("[DEBUG::LUNATIC]- METHOD::updateLunaticLOS");
-		
+			int maxGridRows = GameController.GUI_CONTROLLER.getGUI().getMaxRows();
+			int maxGridColumns = GameController.GUI_CONTROLLER.getGUI().getMaxColumns();
 			
-			//int lunaticID = getLunaticID();
-			int row = getCurrentLocation().getRow();
-			int column = getCurrentLocation().getColumn();
+			int row = getCurrentLocation().getRow(); int column = getCurrentLocation().getColumn(); // Current location
 			
-			getVerticalLineOfSight_up().clear(); // Clears the LOS_UP before rechecking.
-			getVerticalLineOfSight_down().clear(); // Clears the LOS_DOWN before rechecking.
-			getHorizontalLineOfSight_left().clear(); // Clears the LOS_LEFT before rechecking.
-			getHorizontalLineOfSight_right().clear(); // Clears the LOS_RIGHT beofre rechecking.
+			getVerticalLineOfSight_up().clear(); getVerticalLineOfSight_down().clear();  // Clear the last vertical LOS
+			getHorizontalLineOfSight_left().clear(); getHorizontalLineOfSight_right().clear(); // Clear the last horizontal LOS
 			
-			// up
-			vertical_up:for(int i = row-1; i > 1; i--) {
-				
-				if(GameController.GUI_CONTROLLER.getGUI().getGridCellType(i-1, column) == cellType.PATH 
-						|| GameController.GUI_CONTROLLER.getGUI().getGridCellType(i-1, column) == cellType.PLAYER
-						|| GameController.GUI_CONTROLLER.getGUI().getGridCellType(i-1, column) == cellType.LUNATIC) {
-					
-				getVerticalLineOfSight_up().add(new Coordinate(i, column)); // Adds the open coordinate to the los list
-				
-				//System.out.println("[DEBUG::LUNATIC][ID: " + lunaticID + "]- METHOD::updateLunaticLOS-> [VERTICAL_UP]-> [ADDING: (" + (i) + "," + column + ")");
-				
-				} else {
-					
-					//System.out.println("[DEBUG::LUNATIC][ID: " + lunaticID + "]- METHOD::updateLunaticLOS-> [VERTICAL_UP]-> [loop break]");
-					break vertical_up;
-				}
-			}
+			vertical_up:for (int i = row-1; i > 1; i--) // Up
+			{ if (GridPathFinder.IsWalkable(i, column)) {  getVerticalLineOfSight_up().add(new Coordinate(i, column)); 
+			} else {  break vertical_up; }	   
 			
-			// down
-			vertical_down:for(int i = row+1; i < maxGridRows-1; i++) {
+			} vertical_down:for(int i = row+1; i < maxGridRows-1; i++)  // Down
+			{ if (GridPathFinder.IsWalkable(i, column)) { getVerticalLineOfSight_down().add(new Coordinate(i, column));
+			} else { break vertical_down; }	
 				
-				if(GameController.GUI_CONTROLLER.getGUI().getGridCellType(i-1, column) == cellType.PATH 
-						|| GameController.GUI_CONTROLLER.getGUI().getGridCellType(i-1, column) == cellType.PLAYER
-						|| GameController.GUI_CONTROLLER.getGUI().getGridCellType(i-1, column) == cellType.LUNATIC) {
-					
-					getVerticalLineOfSight_down().add(new Coordinate(i, column));
-					
-					//System.out.println("[DEBUG::LUNATIC][ID: " + lunaticID + "]- METHOD::updateLunaticLOS-> [VERTICAL_DOWN]-> [ADDING: (" + (i) + "," + column + ")");
-					
-				} else {
-					
-					//System.out.println("[DEBUG::LUNATIC][ID: " + lunaticID + "]- METHOD::updateLunaticLOS-> [VERTICAL_DOWN]-> [loop break]");
-					break vertical_down;
-				}
-			}
+			} horizontal_left:for(int i = column-1; i > 0; i--) // left
+			{ if (GridPathFinder.IsWalkable(row, i)) { getHorizontalLineOfSight_left().add(new Coordinate(row, i));
+			} else { break horizontal_left; }
 			
-			// left
-			horizontal_left:for(int i = column-1; i > 0; i--) {
+			} horizontal_right:for(int i = column+1; i < maxGridColumns; i++) { // right
+			{ if (GridPathFinder.IsWalkable(row, i)) { getHorizontalLineOfSight_right().add(new Coordinate(row, i));
+			} else { break horizontal_right; }
 				
-				if(GameController.GUI_CONTROLLER.getGUI().getGridCellType(row-1, i) == cellType.PATH 
-						|| GameController.GUI_CONTROLLER.getGUI().getGridCellType(row-1, i) == cellType.PLAYER
-						|| GameController.GUI_CONTROLLER.getGUI().getGridCellType(row-1, i) == cellType.LUNATIC) {
-					
-					getHorizontalLineOfSight_left().add(new Coordinate(row, i));
-					
-					//System.out.println("[DEBUG::LUNATIC][ID: " + lunaticID + "]- METHOD::updateLunaticLOS-> [HORIZONTAL_LEFT]-> [ADDING: (" + (row) + "," + i + ")");
-					
-				} else {
-					
-					//System.out.println("[DEBUG::LUNATIC][ID: " + lunaticID + "]- METHOD::updateLunaticLOS-> [HORIZONTAL_LEFT]-> [loop break]");
-					break horizontal_left;
-				}
-			}
-			
-			// right
-			horizontal_right:for(int i = column+1; i < maxGridColumns; i++) {
-				
-				if(GameController.GUI_CONTROLLER.getGUI().getGridCellType(row-1, i) == cellType.PATH 
-						|| GameController.GUI_CONTROLLER.getGUI().getGridCellType(row-1, i) == cellType.PLAYER
-						|| GameController.GUI_CONTROLLER.getGUI().getGridCellType(row-1, i) == cellType.LUNATIC) {
-					
-					getHorizontalLineOfSight_right().add(new Coordinate(row, i));
-					
-					//System.out.println("[DEBUG::LUNATIC][ID: " + lunaticID + "]- METHOD::updateLunaticLOS-> [HORIZONTAL_RIGHT]-> [ADDING: (" + (row) + "," + i + ")");
-					
-				} else {
-					
-					//System.out.println("[DEBUG::LUNATIC][ID: " + lunaticID + "]- METHOD::updateLunaticLOS-> [HORIZONTAL_RIGHT]-> [loop break]");
-					break horizontal_right;
 			}
 		}
 	}
