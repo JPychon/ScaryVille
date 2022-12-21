@@ -8,30 +8,30 @@ The application utilizes MVC design pattern for the business-logic.
 
 ### Controllers:
 
-##### BoardController
+##### Board Controller
 
 The Board Controller handles all the 2D board logic through generating a 2D array containing a set of randomly-generated grid modules (walls/paths) based on a set of specific parameters.
-##### Models Associated: AsylumMap
+> **Models Associated:** AsylumMap
 
 #### GameController
 
 The Game Controller manages the game-flow by controlling the current-game status, whether its lost, won or in progress, it also controls in-game pauses & starting new games. This controller also initalizes & houses the other static instances of the sub-controllers.
-##### Models Associated: N/A
+> **Models Associated:** N/A
 
 #### GUIController
 
 The GUI Controller handles all the 2D GUI logic through populating the grid with the correct nodes, celltypes, and starting/ending positions. It also handdles updating the GUI-status throughout the game to reflect the run-time changes based on user-input and AI movement. This controler also manages the hiding/showing the grid for pauses/winning/losing.
-##### Models Associated: MapPane & Cell
+> **Models Associated:** MapPane & Cell
 
 #### LunaticController
 
 The Lunatic Controller manages the AI behavior throughout the game by initially creating them, and selecting random-valid values for their spawn positions, it also handles their movement timeline & stauts updates. Aswell as disabling/enabling them when needed.
-##### Models Associated: Lunatic, GridPathFinder, Node
+> **Models Associated:** Lunatic, GridPathFinder, Node
 
 #### PlayerController
 
 The Player Controller manages the player-bevahir & status through out the game, it controls the player-behavior by updating the GUI & board upon player movement, it also keeps track of the player position relative to losing/winning.
-##### Models Associated: Player
+> **Models Associated:** Player
 
 #### InputController
 
@@ -44,7 +44,7 @@ The Mouse Controller listens to button-clicks on the GUI for starting a new game
 #### SoundController
 
 The Sound Controller manages the soundtrack of the game through starting/stopping the correct tracks based on the game status
-##### Models Associated: SoundTrack
+> **Models Associated:** SoundTrack
 
 ### Pathfinding:
 
